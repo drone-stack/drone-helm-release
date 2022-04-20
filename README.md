@@ -1,9 +1,15 @@
-# drone-plugin template
+# Usage
 
-> drone plugin 参数模版
+> 参数使用
 
-## 内置参数
+- `PLUGIN_DEBUG`, 默认为空
+- `PLUGIN_CONTEXT`, 默认是`.`
+- `PLUGIN_URL`
+- `PLUGIN_USERNAME`
+- `PLUGIN_PASSWORD`
 
-- `PLUGIN_DEBUG` - 是否开启debug日志
-- `PLUGIN_PAUSE` - 是否调试
-- `PLUGIN_PROXY` - 代理
+## 镜像
+
+```bash
+ysicing/drone-helm-release
+```

@@ -1,21 +1,29 @@
-#!/bin/sh
+#!/bin/bash
 
-set -e
+[ ! -z "$1" ] && (
+    exec /bin/bash
+) 
 
-if [ ! -z "${PLUGIN_DEBUG}" ]; then
-	set -x
+[ -z "${PLUGIN_DEBUG}" ] && set -e || set -ex
+
+CHARTS_DIR=${PLUGIN_CONTEXT:-.}
+CHARTS_URL=${PLUGIN_URL}
+PLUGIN_USERNAME=${PLUGIN_USERNAME}
+PLUGIN_PASSWORD=${PLUGIN_PASSWORD}
+
+if [ -z "${PLUGIN_URL}" ]; then
+    echo "url is required"
+    exit 1
 fi
 
-if [ ! -z "${PLUGIN_PAUSE}" ]; then 
- 	sleep 100000
-fi
+[ -z "${PLUGIN_FORCE}" ] && PLUGIN_FORCE="" || PLUGIN_FORCE="--force"
 
-if [ ! -z "${PLUGIN_PROXY}" ]; then
-	export http_proxy=${PLUGIN_PROXY}
-	export https_proxy=${PLUGIN_PROXY}
-	export all_proxy=${PLUGIN_PROXY}
-	export no_proxy=localhost,127.0.0.1/8
-	echo "http proxy done"
-fi
+cd ${CHARTS_DIR}
+    helm package .
+cd -
 
-exec "$@"
+if [ -z "${PLUGIN_USERNAME}" ] && [ -z "${PLUGIN_PASSWORD}" ]; then
+    helm cm-push ${CHARTS_DIR} ${CHARTS_URL} ${PLUGIN_FORCE}
+else 
+    helm cm-push ${CHARTS_DIR} ${CHARTS_URL} --username ${PLUGIN_USERNAME} --password ${PLUGIN_PASSWORD} ${PLUGIN_FORCE}
+fi

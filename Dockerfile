@@ -1,33 +1,15 @@
-FROM ysicing/god AS builder
+FROM ysicing/debian AS gethelm
 
-ENV GOPROXY=https://goproxy.cn,direct
+RUN curl -s -L https://dl.ysicing.me/helm-v3.8.0-linux-amd64.tar.gz -o /tmp/helm-linux-amd64.tar.gz && \
+    mkdir -p /tmp/helm && \
+    tar xzf /tmp/helm-linux-amd64.tar.gz -C /tmp/helm  --strip-components=1 
 
-WORKDIR /go/src/
+FROM ysicing/shell
 
-COPY go.mod go.mod
-
-COPY go.sum go.sum
-
-RUN go mod download
-
-COPY . .
-
-ARG GOOS=linux
-
-ARG GOARCH=amd64
-
-ARG CGO_ENABLED=0
-
-RUN go build -o release/linux/amd64/plugin
-
-FROM ysicing/debian
-
-COPY --from=builder /go/src/release/linux/amd64/plugin /bin/drone-plugin
+COPY --from=gethelm /tmp/helm/helm /usr/local/bin/helm
 
 COPY entrypoint.sh /entrypoint.sh
 
-RUN chmod +x /entrypoint.sh /bin/drone-plugin
+RUN chmod +x  /usr/local/bin/helm /entrypoint.sh && helm plugin install https://gitee.com/ysbot/helm-push
 
 ENTRYPOINT ["/entrypoint.sh"]
-
-CMD [ "/bin/drone-plugin" ]
