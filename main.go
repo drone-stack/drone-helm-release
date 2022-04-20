@@ -33,8 +33,8 @@ func main() {
 	}
 
 	app := cli.NewApp()
-	app.Name = "drone example plugin"
-	app.Usage = "drone example plugin"
+	app.Name = "drone helm release plugin"
+	app.Usage = "drone helm release plugin"
 	app.Action = run
 	app.Version = version
 	app.Flags = []cli.Flag{
@@ -42,6 +42,37 @@ func main() {
 			Name:   "debug",
 			Usage:  "debug",
 			EnvVar: "PLUGIN_DEBUG",
+		},
+		cli.StringFlag{
+			Name:   "username",
+			Usage:  "username",
+			EnvVar: "PLUGIN_USERNAME",
+		},
+		cli.StringFlag{
+			Name:   "password",
+			Usage:  "password",
+			EnvVar: "PLUGIN_PASSWORD",
+		},
+		cli.StringFlag{
+			Name:   "token",
+			Usage:  "token",
+			EnvVar: "PLUGIN_TOKEN",
+		},
+		cli.StringFlag{
+			Name:   "hub",
+			Usage:  "hub",
+			EnvVar: "PLUGIN_HUB",
+		},
+		cli.StringFlag{
+			Name:   "context",
+			Usage:  "context",
+			EnvVar: "PLUGIN_CONTEXT",
+			Value:  ".",
+		},
+		cli.BoolFlag{
+			Name:   "multi",
+			Usage:  "multi",
+			EnvVar: "PLUGIN_MULTI",
 		},
 	}
 
@@ -54,6 +85,14 @@ func run(c *cli.Context) error {
 	plugin := plugin.Plugin{
 		Ext: plugin.Ext{
 			Debug: c.Bool("debug"),
+		},
+		Push: plugin.Push{
+			Username: c.String("username"),
+			Password: c.String("password"),
+			Token:    c.String("token"),
+			Hub:      c.String("hub"),
+			Context:  c.String("context"),
+			Multi:    c.Bool("multi"),
 		},
 	}
 
