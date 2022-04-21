@@ -1,3 +1,4 @@
 dist/
 drone-plugin-template
 release/
+*.tgz

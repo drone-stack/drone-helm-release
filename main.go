@@ -59,9 +59,10 @@ func main() {
 			EnvVar: "PLUGIN_TOKEN",
 		},
 		cli.StringFlag{
-			Name:   "hub",
-			Usage:  "hub",
-			EnvVar: "PLUGIN_HUB",
+			Name:     "hub",
+			Usage:    "hub",
+			EnvVar:   "PLUGIN_HUB",
+			Required: true,
 		},
 		cli.StringFlag{
 			Name:   "context",
@@ -73,6 +74,11 @@ func main() {
 			Name:   "multi",
 			Usage:  "multi",
 			EnvVar: "PLUGIN_MULTI",
+		},
+		cli.BoolFlag{
+			Name:   "force",
+			Usage:  "force",
+			EnvVar: "PLUGIN_FORCE",
 		},
 	}
 
@@ -93,6 +99,7 @@ func run(c *cli.Context) error {
 			Hub:      c.String("hub"),
 			Context:  c.String("context"),
 			Multi:    c.Bool("multi"),
+			Force:    c.Bool("force"),
 		},
 	}
 

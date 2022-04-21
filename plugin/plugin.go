@@ -1,6 +1,7 @@
 package plugin
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -21,6 +22,7 @@ type (
 		Hub      string
 		Context  string // charts directory
 		Multi    bool   // multi-charts upload
+		Force    bool   // force upload
 	}
 	Plugin struct {
 		Ext  Ext
@@ -28,13 +30,14 @@ type (
 	}
 )
 
-type pushcmd struct {
-	cmd  *exec.Cmd
+type cmd struct {
+	pack *exec.Cmd
+	push *exec.Cmd
 	name string
 }
 
 func (p Plugin) Exec() error {
-	var cmds []*pushcmd
+	var cmds []*cmd
 	p.Push.Context = strings.TrimSuffix(p.Push.Context, "/")
 	if p.Push.Multi {
 		logrus.Debugf("multi-charts upload: %s\n", p.Push.Context)
@@ -54,11 +57,19 @@ func (p Plugin) Exec() error {
 		cmds = append(cmds, p.pushAction(p.Push.Context))
 	}
 	for _, cmd := range cmds {
-		cmd.cmd.Stdout = os.Stdout
-		cmd.cmd.Stderr = os.Stderr
-		trace(cmd.cmd)
-		if err := cmd.cmd.Run(); err != nil {
-			logrus.Errorf("upload [%s] chart failed\n", cmd.name)
+		var b bytes.Buffer
+		cmd.push.Stdout = os.Stdout
+		cmd.push.Stderr = &b
+		if p.Ext.Debug {
+			trace(cmd.push)
+		}
+		err := cmd.push.Run()
+		if err != nil {
+			if error409(b.String()) {
+				logrus.Warnf("upload [%s] chart already exists, skip\n", cmd.name)
+			} else {
+				logrus.Errorf("upload [%s] chart failed\n", cmd.name)
+			}
 		} else {
 			logrus.Infof("upload [%s] chart success\n", cmd.name)
 		}
@@ -66,7 +77,11 @@ func (p Plugin) Exec() error {
 	return nil
 }
 
-func (p Plugin) pushAction(path string) *pushcmd {
+func (p Plugin) pushAction(path string) *cmd {
+	force := ""
+	if p.Push.Force {
+		force = "--force"
+	}
 	var chartname string
 	var chartpath string
 	// #nosec G204
@@ -78,8 +93,23 @@ func (p Plugin) pushAction(path string) *pushcmd {
 		chartname = strings.Trim(t[len(t)-1], "/")
 		chartpath = path
 	}
-	return &pushcmd{
-		cmd:  exec.Command("echo", chartpath),
+	if len(p.Push.Token) == 0 && (len(p.Push.Username) == 0 || len(p.Push.Password) == 0) {
+		return &cmd{
+			// #nosec
+			push: exec.Command("helm", "cm-push", chartpath, p.Push.Hub, force),
+			name: chartname,
+		}
+	} else if len(p.Push.Token) > 0 {
+		return &cmd{
+			// #nosec
+			push: exec.Command("helm", "cm-push", chartpath, p.Push.Hub, "--access-token", p.Push.Token, force),
+			name: chartname,
+		}
+	}
+	return &cmd{
+		// #nosec
+		push: exec.Command("helm", "cm-push", chartpath, p.Push.Hub, "--username", p.Push.Username, "--password", p.Push.Password, force),
+		// pack: exec.Command("helm", "package", chartpath),
 		name: chartname,
 	}
 }
@@ -88,4 +118,11 @@ func (p Plugin) pushAction(path string) *pushcmd {
 // tag so that it can be extracted and displayed in the logs.
 func trace(cmd *exec.Cmd) {
 	fmt.Fprintf(os.Stdout, "+ %s\n", strings.Join(cmd.Args, " "))
+}
+
+func error409(err string) bool {
+	if strings.Contains(err, "409") || strings.Contains(err, "exists") {
+		return true
+	}
+	return false
 }
