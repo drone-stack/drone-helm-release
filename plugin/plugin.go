@@ -158,11 +158,29 @@ func (p Plugin) pushAction(path string) *cmd {
 
 func (p Plugin) prepareRepoAdd() {
 	// #nosec
-	exec.Command("helm", "repo", "add", "hc-default", p.Push.Hub).Run()
+	if err := p.runCmd("repo", "add", "hc-default", p.Push.Hub); err != nil {
+		logrus.Errorf("helm repo add hc-default failed: %v", err)
+	}
 	for i, hub := range p.Push.CommonHub {
 		// #nosec
-		exec.Command("helm", "repo", "add", fmt.Sprintf("hc-%d", i), hub).Run()
+		if err := p.runCmd("repo", "add", fmt.Sprintf("hc-%d", i), hub); err != nil {
+			logrus.Errorf("helm repo add hc-%d failed: %v", i, err)
+		}
 	}
+}
+
+func (p Plugin) runCmd(args ...string) error {
+	// #nosec
+	cmd := exec.Command("helm", args...)
+	cmd.Stdout = os.Stdout
+	if p.Ext.Debug {
+		cmd.Stderr = os.Stderr
+		p.trace(cmd)
+	}
+	if err := cmd.Run(); err != nil {
+		return err
+	}
+	return nil
 }
 
 // trace writes each command to stdout with the command wrapped in an xml
