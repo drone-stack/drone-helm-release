@@ -40,6 +40,7 @@ type cmd struct {
 }
 
 func (p Plugin) Exec() error {
+	p.prepareRepoAdd()
 	var cmds []*cmd
 	p.Push.Context = strings.TrimSuffix(p.Push.Context, "/")
 	if p.Push.Multi {
@@ -61,14 +62,10 @@ func (p Plugin) Exec() error {
 	}
 	for _, cmd := range cmds {
 		var b bytes.Buffer
-		cmd.build.Dir = cmd.path
-		if err := cmd.build.Run(); err != nil {
-			logrus.Warnf("helm build [%s] failed: %v\n", cmd.name, err)
+		if err := p.build(cmd); err != nil {
 			continue
 		}
-		cmd.pack.Dir = cmd.path
-		if err := cmd.pack.Run(); err != nil {
-			logrus.Warnf("helm package [%s] failed: %v\n", cmd.name, err)
+		if err := p.pack(cmd); err != nil {
 			continue
 		}
 		cmd.push.Stdout = os.Stdout
@@ -89,6 +86,36 @@ func (p Plugin) Exec() error {
 		}
 		os.RemoveAll(cmd.depchart)
 	}
+	return nil
+}
+
+func (p Plugin) build(c *cmd) error {
+	c.build.Dir = c.path
+	if p.Ext.Debug {
+		c.build.Stdout = os.Stdout
+		c.build.Stderr = os.Stderr
+		p.trace(c.build)
+	}
+	if err := c.build.Run(); err != nil {
+		logrus.Warnf("helm build [%s] failed: %v\n", c.name, err)
+		return err
+	}
+	logrus.Debugf("helm build [%s] success\n", c.name)
+	return nil
+}
+
+func (p Plugin) pack(c *cmd) error {
+	c.pack.Dir = c.path
+	if p.Ext.Debug {
+		c.pack.Stdout = os.Stdout
+		c.pack.Stderr = os.Stderr
+		p.trace(c.pack)
+	}
+	if err := c.pack.Run(); err != nil {
+		logrus.Warnf("helm package [%s] failed: %v\n", c.name, err)
+		return err
+	}
+	logrus.Debugf("helm package [%s] success\n", c.name)
 	return nil
 }
 
@@ -126,6 +153,11 @@ func (p Plugin) pushAction(path string) *cmd {
 		cmdmeta.push = exec.Command("helm", "cm-push", ".", p.Push.Hub, "--username", p.Push.Username, "--password", p.Push.Password, force)
 	}
 	return &cmdmeta
+}
+
+func (p Plugin) prepareRepoAdd() {
+	// #nosec
+	exec.Command("helm", "repo", "add", "qq", p.Push.Hub).Run()
 }
 
 // trace writes each command to stdout with the command wrapped in an xml
