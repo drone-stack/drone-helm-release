@@ -16,14 +16,14 @@ type (
 		Debug bool
 	}
 	Push struct {
-		Username  string
-		Password  string
-		Token     string
-		Hub       string
-		Context   string   // charts directory
-		Multi     bool     // multi-charts upload
-		Force     bool     // force upload
-		CommonHub []string // common hub
+		Username string
+		Password string
+		Token    string
+		Hub      string
+		Context  string   // charts directory
+		Multi    bool     // multi-charts upload
+		Force    bool     // force upload
+		Exthub   []string // common hub
 	}
 	Plugin struct {
 		Ext  Ext
@@ -161,7 +161,7 @@ func (p Plugin) prepareRepoAdd() {
 	if err := p.runCmd("repo", "add", "hc-default", p.Push.Hub); err != nil {
 		logrus.Errorf("helm repo add hc-default failed: %v", err)
 	}
-	for i, hub := range p.Push.CommonHub {
+	for i, hub := range p.Push.Exthub {
 		// #nosec
 		if err := p.runCmd("repo", "add", fmt.Sprintf("hc-%d", i), hub); err != nil {
 			logrus.Errorf("helm repo add hc-%d failed: %v", i, err)

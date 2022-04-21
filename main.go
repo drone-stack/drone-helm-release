@@ -81,9 +81,9 @@ func main() {
 			EnvVar: "PLUGIN_FORCE",
 		},
 		cli.StringSliceFlag{
-			Name:   "common-hub",
-			Usage:  "common-hub",
-			EnvVar: "PLUGIN_COMMON_HUB",
+			Name:   "exthub",
+			Usage:  "exthub",
+			EnvVar: "PLUGIN_EXTHUB",
 		},
 	}
 
@@ -98,14 +98,14 @@ func run(c *cli.Context) error {
 			Debug: c.Bool("debug"),
 		},
 		Push: plugin.Push{
-			Username:  c.String("username"),
-			Password:  c.String("password"),
-			Token:     c.String("token"),
-			Hub:       c.String("hub"),
-			Context:   c.String("context"),
-			Multi:     c.Bool("multi"),
-			Force:     c.Bool("force"),
-			CommonHub: c.StringSlice("common-hub"),
+			Username: c.String("username"),
+			Password: c.String("password"),
+			Token:    c.String("token"),
+			Hub:      c.String("hub"),
+			Context:  c.String("context"),
+			Multi:    c.Bool("multi"),
+			Force:    c.Bool("force"),
+			Exthub:   c.StringSlice("exthub"),
 		},
 	}
 
