@@ -140,7 +140,7 @@ func (p Plugin) pushAction(path string) *cmd {
 	// #nosec
 	cmdmeta.build = exec.Command("helm", "dependency", "build")
 	// #nosec
-	cmdmeta.pack = exec.Command("helm", "package", ".")
+	cmdmeta.pack = exec.Command("helm", "package", ".", "-u")
 	//cmdmeta.pack = exec.Command("helm", "package", "-u", chartpath, "-d", cmdmeta.depchart)
 	if len(p.Push.Token) == 0 && (len(p.Push.Username) == 0 || len(p.Push.Password) == 0) {
 		// #nosec
