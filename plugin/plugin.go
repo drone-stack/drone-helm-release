@@ -16,13 +16,14 @@ type (
 		Debug bool
 	}
 	Push struct {
-		Username string
-		Password string
-		Token    string
-		Hub      string
-		Context  string // charts directory
-		Multi    bool   // multi-charts upload
-		Force    bool   // force upload
+		Username  string
+		Password  string
+		Token     string
+		Hub       string
+		Context   string   // charts directory
+		Multi     bool     // multi-charts upload
+		Force     bool     // force upload
+		CommonHub []string // common hub
 	}
 	Plugin struct {
 		Ext  Ext
@@ -157,7 +158,11 @@ func (p Plugin) pushAction(path string) *cmd {
 
 func (p Plugin) prepareRepoAdd() {
 	// #nosec
-	exec.Command("helm", "repo", "add", "qq", p.Push.Hub).Run()
+	exec.Command("helm", "repo", "add", "hc-default", p.Push.Hub).Run()
+	for i, hub := range p.Push.CommonHub {
+		// #nosec
+		exec.Command("helm", "repo", "add", fmt.Sprintf("hc-%d", i), hub).Run()
+	}
 }
 
 // trace writes each command to stdout with the command wrapped in an xml

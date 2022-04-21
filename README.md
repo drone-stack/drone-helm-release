@@ -17,6 +17,7 @@
 - `PLUGIN_CONTEXT` - 路径，默认.
 - `PLUGIN_MULTI` - 是否为多个chart，当前目录下有多个charts
 - `PLUGIN_FORCE` - 是否强制发布
+- `PLUGIN_COMMON_HUB` - 依赖的chart的hub地址
 
 ## usage
 
@@ -35,4 +36,6 @@
         from_secret: tcr-hub
       context: ./stable
       multi: true
+      common-hub: 
+      - https://charts.bitnami.com/bitnami
 ```
