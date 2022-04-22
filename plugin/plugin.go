@@ -32,6 +32,7 @@ type (
 )
 
 type cmd struct {
+	update   *exec.Cmd
 	build    *exec.Cmd
 	pack     *exec.Cmd
 	push     *exec.Cmd
@@ -63,6 +64,7 @@ func (p Plugin) Exec() error {
 	}
 	for _, cmd := range cmds {
 		var b bytes.Buffer
+		p.update(cmd)
 		if err := p.build(cmd); err != nil {
 			continue
 		}
@@ -87,6 +89,21 @@ func (p Plugin) Exec() error {
 		}
 		os.RemoveAll(cmd.depchart)
 	}
+	return nil
+}
+
+func (p Plugin) update(c *cmd) error {
+	c.update.Dir = c.path
+	if p.Ext.Debug {
+		c.update.Stdout = os.Stdout
+		c.update.Stderr = os.Stderr
+		p.trace(c.update)
+	}
+	if err := c.update.Run(); err != nil {
+		logrus.Warnf("helm update [%s] failed: %v\n", c.name, err)
+		return err
+	}
+	logrus.Debugf("helm update [%s] success\n", c.name)
 	return nil
 }
 
@@ -138,6 +155,8 @@ func (p Plugin) pushAction(path string) *cmd {
 	}
 	cmdmeta.path = chartpath
 	cmdmeta.depchart = fmt.Sprintf("%s/charts", chartpath)
+	// #nosec
+	cmdmeta.update = exec.Command("helm", "dependency", "update", "--skip-refresh")
 	// #nosec
 	cmdmeta.build = exec.Command("helm", "dependency", "build")
 	// #nosec
