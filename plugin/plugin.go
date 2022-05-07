@@ -56,6 +56,7 @@ func (p Plugin) Exec() error {
 			if err != nil {
 				return err
 			}
+			logrus.Debugf("load charts: %v\n", charts)
 			for _, chart := range charts {
 				cmds = append(cmds, p.pushAction(chart))
 			}
@@ -186,6 +187,10 @@ func (p Plugin) prepareRepoAdd() {
 		if err := p.runCmd("repo", "add", fmt.Sprintf("hc-%d", i), hub); err != nil {
 			logrus.Errorf("helm repo add hc-%d failed: %v", i, err)
 		}
+	}
+	// #nosec
+	if err := p.runCmd("repo", "update"); err != nil {
+		logrus.Errorf("helm repo update failed: %v", err)
 	}
 }
 
