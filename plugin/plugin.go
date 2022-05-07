@@ -24,6 +24,7 @@ type (
 		Multi    bool     // multi-charts upload
 		Force    bool     // force upload
 		Exthub   []string // common hub
+		Exclude  string
 	}
 	Plugin struct {
 		Ext  Ext
@@ -51,7 +52,7 @@ func (p Plugin) Exec() error {
 			logrus.Warnf("found %s/Chart.yaml, not multi-charts will only upload current context charts\n", p.Push.Context)
 			cmds = append(cmds, p.pushAction(p.Push.Context))
 		} else {
-			charts, err := file.DirFilesList(p.Push.Context, "Chart.yaml", "")
+			charts, err := file.DirFilesList(p.Push.Context, "Chart.yaml", p.Push.Exclude)
 			if err != nil {
 				return err
 			}

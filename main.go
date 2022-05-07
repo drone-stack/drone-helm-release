@@ -85,6 +85,11 @@ func main() {
 			Usage:  "exthub",
 			EnvVar: "PLUGIN_EXTHUB",
 		},
+		cli.StringFlag{
+			Name:   "exclude",
+			Usage:  "exclude",
+			EnvVar: "PLUGIN_EXCLUDE",
+		},
 	}
 
 	if err := app.Run(os.Args); err != nil {
@@ -106,6 +111,7 @@ func run(c *cli.Context) error {
 			Multi:    c.Bool("multi"),
 			Force:    c.Bool("force"),
 			Exthub:   c.StringSlice("exthub"),
+			Exclude:  c.String("exclude"),
 		},
 	}
 
