@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	version = "0.0.5"
+	version = "0.0.6"
 )
 
 type formatter struct{}
@@ -90,6 +90,11 @@ func main() {
 			Usage:  "exclude",
 			EnvVar: "PLUGIN_EXCLUDE",
 		},
+		cli.BoolFlag{
+			Name:   "skip-refresh",
+			Usage:  "force",
+			EnvVar: "PLUGIN_SKIP_REFRESH",
+		},
 	}
 
 	if err := app.Run(os.Args); err != nil {
@@ -103,15 +108,16 @@ func run(c *cli.Context) error {
 			Debug: c.Bool("debug"),
 		},
 		Push: plugin.Push{
-			Username: c.String("username"),
-			Password: c.String("password"),
-			Token:    c.String("token"),
-			Hub:      c.String("hub"),
-			Context:  c.String("context"),
-			Multi:    c.Bool("multi"),
-			Force:    c.Bool("force"),
-			Exthub:   c.StringSlice("exthub"),
-			Exclude:  c.String("exclude"),
+			Username:    c.String("username"),
+			Password:    c.String("password"),
+			Token:       c.String("token"),
+			Hub:         c.String("hub"),
+			Context:     c.String("context"),
+			Multi:       c.Bool("multi"),
+			Force:       c.Bool("force"),
+			Exthub:      c.StringSlice("exthub"),
+			Exclude:     c.String("exclude"),
+			SkipRefresh: c.Bool("skip-refresh"),
 		},
 	}
 

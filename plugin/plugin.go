@@ -16,15 +16,16 @@ type (
 		Debug bool
 	}
 	Push struct {
-		Username string
-		Password string
-		Token    string
-		Hub      string
-		Context  string   // charts directory
-		Multi    bool     // multi-charts upload
-		Force    bool     // force upload
-		Exthub   []string // common hub
-		Exclude  string
+		Username    string
+		Password    string
+		Token       string
+		Hub         string
+		Context     string   // charts directory
+		Multi       bool     // multi-charts upload
+		Force       bool     // force upload
+		Exthub      []string // common hub
+		Exclude     string
+		SkipRefresh bool // skip refresh
 	}
 	Plugin struct {
 		Ext  Ext
@@ -158,7 +159,12 @@ func (p Plugin) pushAction(path string) *cmd {
 	cmdmeta.path = chartpath
 	cmdmeta.depchart = fmt.Sprintf("%s/charts", chartpath)
 	// #nosec
-	cmdmeta.update = exec.Command("helm", "dependency", "update", "--skip-refresh")
+	if p.Push.SkipRefresh {
+		cmdmeta.update = exec.Command("helm", "dependency", "update", "--skip-refresh")
+	} else {
+		cmdmeta.update = exec.Command("helm", "dependency", "update")
+	}
+
 	// #nosec
 	cmdmeta.build = exec.Command("helm", "dependency", "build")
 	// #nosec

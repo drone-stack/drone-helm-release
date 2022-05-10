@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.6
+
+- 支持PLUGIN_SKIP_REFRESH参数
+
 ## 0.0.5
 
 - 支持忽略某些charts

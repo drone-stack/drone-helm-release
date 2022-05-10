@@ -19,6 +19,7 @@
 - `PLUGIN_FORCE` - 是否强制发布
 - `PLUGIN_EXTHUB` - 依赖的chart的hub地址
 - `PLUGIN_EXCLUDE` - 排除的chart, 仅多个charts生效
+- `PLUGIN_SKIP_REFRESH` - 是否忽略更新依赖
 
 ## usage
 
