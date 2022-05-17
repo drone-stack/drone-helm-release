@@ -53,7 +53,7 @@ func (p Plugin) Exec() error {
 			logrus.Warnf("found %s/Chart.yaml, not multi-charts will only upload current context charts\n", p.Push.Context)
 			cmds = append(cmds, p.pushAction(p.Push.Context))
 		} else {
-			charts, err := file.DirFilesList(p.Push.Context, "Chart.yaml", p.Push.Exclude)
+			charts, err := file.DirFilesList(p.Push.Context, []string{"Chart.yaml"}, p.Push.Exclude)
 			if err != nil {
 				return err
 			}

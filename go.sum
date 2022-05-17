@@ -5,6 +5,8 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/ergoapi/util v0.2.11 h1:f4ToX2cl2RzgzoVNJPKjqqM9sglm02m19S1zVz0LwII=
 github.com/ergoapi/util v0.2.11/go.mod h1:C4o21QcgLVTmiOP9T5JTqL1AnOb+0cp2wtuceF58GBM=
+github.com/ergoapi/util v0.2.15 h1:BSDHzhhpNy1c4KFTDfNxP/WaojkT0/cD1q4DLwiLzh0=
+github.com/ergoapi/util v0.2.15/go.mod h1:jWEjfilcMRX622wfeNjv29o2ZzXg5EVQKX0jeESJV1c=
 github.com/joho/godotenv v1.4.0 h1:3l4+N6zfMWnkbPEXKng2o2/MR5mSwTrBih4ZEkkz1lg=
 github.com/joho/godotenv v1.4.0/go.mod h1:f4LDr5Voq0i2e/R5DDNOoa2zzDfwtkZa6DnEwAbqwq4=
 github.com/otiai10/copy v1.7.0 h1:hVoPiN+t+7d2nzzwMiDHPSOogsWAStewq3TwU05+clE=

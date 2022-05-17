@@ -3,7 +3,7 @@ module github.com/drone-stack/drone-plugin-template
 go 1.18
 
 require (
-	github.com/ergoapi/util v0.2.11
+	github.com/ergoapi/util v0.2.15
 	github.com/joho/godotenv v1.4.0
 	github.com/sirupsen/logrus v1.8.1
 	github.com/urfave/cli v1.22.5
