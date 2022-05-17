@@ -24,7 +24,7 @@ type (
 		Multi       bool     // multi-charts upload
 		Force       bool     // force upload
 		Exthub      []string // common hub
-		Exclude     string
+		Exclude     []string
 		SkipRefresh bool // skip refresh
 	}
 	Plugin struct {
